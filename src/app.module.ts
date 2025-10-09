@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ChatsModule } from './chats/chats.module';
 import { databaseConfig } from './config/database.config';
 import * as mongoose from 'mongoose';
 
@@ -20,6 +21,7 @@ mongoose.connection.on('error', (err) => {
     MongooseModule.forRoot(databaseConfig.uri),
     UsersModule,
     AuthModule,
+    ChatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
