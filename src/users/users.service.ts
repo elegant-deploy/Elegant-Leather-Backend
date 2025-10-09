@@ -15,13 +15,14 @@ export class UsersService {
     password: string;
     firstName: string;
     lastName: string;
+    username: string;
   }): Promise<User> {
-    const { email, password, firstName, lastName } = createUserDto;
+    const { email, password, firstName, lastName, username } = createUserDto;
 
     // Check if user already exists
-    const existingUser = await this.userModel.findOne({ email });
+    const existingUser = await this.userModel.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      throw new ConflictException('User with this email or username already exists');
     }
 
     // Hash password
@@ -34,9 +35,12 @@ export class UsersService {
       password: hashedPassword,
       firstName,
       lastName,
+      username,
     });
 
-    return newUser.save();
+    const savedUser = await newUser.save();
+    console.log('User created:', savedUser._id);
+    return savedUser;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -52,6 +56,12 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: Partial<User>): Promise<User> {
+    // If password is being updated, hash it
+    if (updateUserDto.password) {
+      const saltRounds = 10;
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, saltRounds);
+    }
+
     const user = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
       new: true,
     });

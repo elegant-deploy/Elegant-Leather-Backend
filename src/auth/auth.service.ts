@@ -29,6 +29,7 @@ export class AuthService {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        username: user.username,
         isAdmin: user.isAdmin,
       },
     };
@@ -39,6 +40,7 @@ export class AuthService {
     password: string;
     firstName: string;
     lastName: string;
+    username: string;
   }) {
     const user = await this.usersService.create(createUserDto);
     const { password, ...result } = (user as UserDocument).toObject();
