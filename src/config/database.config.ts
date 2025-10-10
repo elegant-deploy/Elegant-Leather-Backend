@@ -1,5 +1,5 @@
 export const databaseConfig = {
-  uri: 'mongodb://localhost:27017/legal-agent-backend',
+  uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/legal-agent-backend',
 };
 
 console.log('Connecting to MongoDB:', databaseConfig.uri);
