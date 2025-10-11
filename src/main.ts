@@ -10,11 +10,22 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
 
-  const port = process.env.PORT ?? 3000;
-  await app.listen(port, '0.0.0.0');
+  if (process.env.VERCEL) {
+    // For Vercel serverless, return the Express instance
+    return app.getHttpAdapter().getInstance();
+  } else {
+    const port = process.env.PORT ?? 3000;
+    await app.listen(port, '0.0.0.0');
 
-  console.log(`🚀 Application is running on: http://localhost:${port}`);
-  console.log(`🚀 Application is accessible at: http://0.0.0.0:${port}`);
+    console.log(`🚀 Application is running on: http://localhost:${port}`);
+    console.log(`🚀 Application is accessible at: http://0.0.0.0:${port}`);
+  }
 }
-bootstrap();
+
+// For serverless deployment
+if (process.env.VERCEL) {
+  module.exports = bootstrap();
+} else {
+  bootstrap();
+}
 
