@@ -5,14 +5,18 @@ import { Chat, ChatDocument } from './schemas/chat.schema';
 
 @Injectable()
 export class ChatsService {
+  private pythonAgentUrl: string;
+
   constructor(
     @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
-  ) {}
+  ) {
+    this.pythonAgentUrl = process.env.PYTHON_AGENT_SERVER_URI || 'http://localhost:8000';
+  }
 
   async createChat(question: string, userId: string): Promise<{ chatId: string; messageId: string }> {
     try {
       // Call FastAPI without context for new chat
-      const response = await fetch('http://localhost:8000/legal/ask', {
+      const response = await fetch(`${this.pythonAgentUrl}/legal/ask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +82,7 @@ export class ChatsService {
       }));
 
       // Call FastAPI with context
-      const response = await fetch('http://localhost:8000/legal/ask', {
+      const response = await fetch(`${this.pythonAgentUrl}/legal/ask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
