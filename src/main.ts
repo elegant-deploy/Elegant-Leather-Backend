@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 // Load environment variables
 dotenv.config();
@@ -9,6 +10,16 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
+
+  // Enable CORS for all origins
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
+
+  // Enable Socket.IO adapter
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   if (process.env.VERCEL) {
     // For Vercel serverless, return the Express instance
@@ -19,6 +30,7 @@ async function bootstrap() {
 
     console.log(`🚀 Application is running on: http://localhost:${port}`);
     console.log(`🚀 Application is accessible at: http://0.0.0.0:${port}`);
+    console.log(`🔌 Socket.IO server is ready`);
   }
 }
 
