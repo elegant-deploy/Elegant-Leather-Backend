@@ -9,7 +9,7 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  // app.useGlobalPipes(new ValidationPipe()); // Removed global validation to avoid issues with GET requests
 
   // Enable CORS for all origins
   app.enableCors({
