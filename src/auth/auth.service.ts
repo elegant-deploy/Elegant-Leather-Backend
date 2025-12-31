@@ -9,11 +9,11 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
-    if (user && (await this.usersService.validatePassword(user, password))) {
+    if (user && user.isAdmin && (await this.usersService.validatePassword(user, password))) {
       const { password, ...result } = (user as UserDocument).toObject();
       return result;
     }
@@ -33,17 +33,5 @@ export class AuthService {
         isAdmin: user.isAdmin,
       },
     };
-  }
-
-  async register(createUserDto: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    username: string;
-  }) {
-    const user = await this.usersService.create(createUserDto);
-    const { password, ...result } = (user as UserDocument).toObject();
-    return this.login(result);
   }
 } 

@@ -8,7 +8,7 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 # MongoDB Configuration
-MONGODB_URI=mongodb://localhost:27017/legal-agent-backend
+MONGODB_URI=mongodb://localhost:27017/elegant-leather
 
 # JWT Configuration
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
