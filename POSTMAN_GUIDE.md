@@ -255,6 +255,45 @@ Authorization: Bearer <token>
 
 ---
 
+## Testing the Audit System
+
+The audit system logs all CRUD operations performed by admins (Super Admin and Department Admins). It captures:
+
+- **Timestamp**: When the action occurred
+- **User**: Who performed the action (userId)
+- **Action**: CREATE, UPDATE, DELETE
+- **Resource**: Department, User, Order, Stock, Product, Leather, Category
+- **Details**: Description of the action
+- **IP Address**: Client IP address
+- **Old Value**: Previous state (for updates/deletes)
+- **New Value**: New state (for creates/updates)
+
+### How to Test:
+
+1. **Login as Super Admin** (use the login request above)
+
+2. **Perform Various Actions**:
+   - Create a department
+   - Create a department admin
+   - Create an order
+   - Update order status
+   - Add stock
+   - Update stock quantity
+   - Create/update/delete products, leathers, categories
+
+3. **Check Audit Logs**:
+   - Send `GET /audit-logs` request
+   - Verify each action is logged with correct details
+   - Check timestamps, user IDs, actions, resources
+   - Confirm IP address is captured
+   - For updates, verify oldValue and newValue are stored
+
+4. **Login as Department Admin** and perform actions (e.g., update order status), then check logs as Super Admin.
+
+**Note**: Only Super Admin can view audit logs. Department Admins cannot access `/audit-logs`.
+
+---
+
 ## Error Handling
 - 401 Unauthorized: Invalid/missing token
 - 403 Forbidden: Insufficient permissions

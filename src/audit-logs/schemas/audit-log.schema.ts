@@ -9,13 +9,10 @@ export class AuditLog {
   userId: string;
 
   @Prop({ required: true })
-  action: string; // e.g., CREATE_USER, UPDATE_ORDER
+  action: string; // CREATE, UPDATE, DELETE, etc.
 
   @Prop({ required: true })
-  entity: string; // e.g., User, Order
-
-  @Prop({ required: true })
-  entityId: string;
+  resource: string; // Department, User, Order, Stock, etc.
 
   @Prop({ type: Object })
   oldValue: any;
@@ -24,7 +21,10 @@ export class AuditLog {
   newValue: any;
 
   @Prop()
-  description: string;
+  details: string;
+
+  @Prop()
+  ipAddress: string;
 }
 
 export const AuditLogSchema = SchemaFactory.createForClass(AuditLog);

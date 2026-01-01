@@ -28,6 +28,10 @@ export class StockService {
     return this.stockModel.find(query).populate('departmentId addedBy').exec();
   }
 
+  async findOne(id: string): Promise<Stock | null> {
+    return this.stockModel.findById(id).populate('departmentId addedBy').exec();
+  }
+
   async updateQuantity(id: string, quantity: number): Promise<Stock | null> {
     return this.stockModel.findByIdAndUpdate(id, { quantity }, { new: true }).exec();
   }

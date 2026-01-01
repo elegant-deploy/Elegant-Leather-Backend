@@ -3,9 +3,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { StockService } from './stock.service';
 import { StockController } from './stock.controller';
 import { Stock, StockSchema } from './schemas/stock.schema';
+import { AuditLogsModule } from '../audit-logs/audit-logs.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Stock.name, schema: StockSchema }])],
+  imports: [
+    MongooseModule.forFeature([{ name: Stock.name, schema: StockSchema }]),
+    AuditLogsModule,
+  ],
   controllers: [StockController],
   providers: [StockService],
   exports: [StockService],

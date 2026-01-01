@@ -12,11 +12,11 @@ export class AuditLogsService {
   async logAction(logData: {
     userId: string;
     action: string;
-    entity: string;
-    entityId: string;
+    resource: string;
     oldValue?: any;
     newValue?: any;
-    description?: string;
+    details?: string;
+    ipAddress?: string;
   }): Promise<AuditLog> {
     const log = new this.auditLogModel(logData);
     return log.save();
