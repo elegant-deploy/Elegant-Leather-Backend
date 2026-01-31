@@ -11,10 +11,9 @@ export class ProductsService {
 
     async create(createProductDto: {
         title: string;
-        description: string;
+        tags?: string[];
         category: string;
-        mainImage: string;
-        variants?: string[];
+        images: any;
     }): Promise<Product> {
         const createdProduct = new this.productModel(createProductDto);
         return createdProduct.save();
@@ -22,6 +21,10 @@ export class ProductsService {
 
     async findAll(): Promise<Product[]> {
         return this.productModel.find().exec();
+    }
+
+    async count(): Promise<number> {
+        return this.productModel.countDocuments().exec();
     }
 
     async findByCategory(category: string): Promise<Product[]> {
@@ -34,10 +37,9 @@ export class ProductsService {
 
     async update(id: string, updateProductDto: Partial<{
         title: string;
-        description: string;
+        tags?: string[];
         category: string;
-        mainImage: string;
-        variants: string[];
+        images: any;
     }>): Promise<Product | null> {
         return this.productModel.findByIdAndUpdate(id, updateProductDto, { new: true }).exec();
     }

@@ -10,14 +10,18 @@ export class LeathersService {
     ) { }
 
     async create(createLeatherDto: {
-        title: string;
-        description: string;
+        name: string;
+        description?: string;
         category: string;
-        mainImage: string;
-        variants?: string[];
+        tags?: string[];
+        media: any;
     }): Promise<Leather> {
         const createdLeather = new this.leatherModel(createLeatherDto);
         return createdLeather.save();
+    }
+
+    async count(): Promise<number> {
+        return this.leatherModel.countDocuments().exec();
     }
 
     async findAll(): Promise<Leather[]> {
@@ -33,11 +37,11 @@ export class LeathersService {
     }
 
     async update(id: string, updateLeatherDto: Partial<{
-        title: string;
-        description: string;
+        name: string;
+        description?: string;
         category: string;
-        mainImage: string;
-        variants: string[];
+        tags?: string[];
+        media: any;
     }>): Promise<Leather | null> {
         return this.leatherModel.findByIdAndUpdate(id, updateLeatherDto, { new: true }).exec();
     }

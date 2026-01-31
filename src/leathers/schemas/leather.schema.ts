@@ -3,22 +3,40 @@ import { Document } from 'mongoose';
 
 export type LeatherDocument = Leather & Document;
 
+interface MediaAsset {
+    url: string;
+    public_id: string;
+}
+
+interface VariantMedia {
+    images: MediaAsset[];
+    videos: MediaAsset[];
+}
+
+interface MediaSection {
+    main?: MediaAsset;
+    variants: VariantMedia[];
+}
+
 @Schema({ timestamps: true })
 export class Leather {
     @Prop({ required: true })
-    title: string;
+    name: string;
 
-    @Prop({ required: true })
+    @Prop()
     description: string;
 
-    @Prop({ required: true, type: String })
+    @Prop({ required: true })
     category: string;
 
-    @Prop({ required: true })
-    mainImage: string; // cloudinary public url
-
     @Prop({ type: [String], default: [] })
-    variants: string[]; // array of cloudinary public urls
+    tags: string[];
+
+    @Prop({ type: Object, required: true })
+    media: {
+        images: MediaSection;
+        videos: MediaSection;
+    };
 }
 
 export const LeatherSchema = SchemaFactory.createForClass(Leather);

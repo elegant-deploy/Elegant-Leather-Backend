@@ -30,6 +30,15 @@ export class User {
   @Prop({ required: true, unique: true })
   username: string;
 
+  @Prop()
+  phone?: string;
+
+  @Prop()
+  address?: string;
+
+  @Prop({ type: Date })
+  lastLogin?: Date;
+
   @Prop({ required: true, enum: UserRole, default: UserRole.DEPT_ADMIN })
   role: UserRole;
 

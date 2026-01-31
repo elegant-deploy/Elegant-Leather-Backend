@@ -8,7 +8,9 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 dotenv.config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn'], // Hide log level messages, only show errors and warnings
+  });
   // app.useGlobalPipes(new ValidationPipe()); // Removed global validation to avoid issues with GET requests
 
   // Enable CORS for all origins

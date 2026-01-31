@@ -3,13 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { User, UserDocument } from './schemas/user.schema';
-import { Department, DepartmentDocument } from '../departments/schemas/department.schema';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Department.name) private departmentModel: Model<DepartmentDocument>,
   ) {}
 
   async create(createUserDto: {
@@ -49,7 +47,7 @@ export class UsersService {
 
     // If this is a department admin, update the department's assignedTo field
     if (role === 'DEPT_ADMIN' && departmentId) {
-      await this.departmentModel.findByIdAndUpdate(departmentId, { assignedTo: savedUser._id });
+      // await this.departmentModel.findByIdAndUpdate(departmentId, { assignedTo: savedUser._id });
     }
 
     return savedUser;
@@ -92,5 +90,45 @@ export class UsersService {
 
   async validatePassword(user: User, password: string): Promise<boolean> {
     return bcrypt.compare(password, user.password);
+  }
+
+  async updateProfile(id: string, updateData: { name: string; email: string; phone?: string; address?: string }): Promise<User> {
+    const [firstName, ...lastNameParts] = updateData.name.split(' ');
+    const lastName = lastNameParts.join(' ') || '';
+
+    const updateObj = {
+      firstName,
+      lastName,
+      email: updateData.email,
+      phone: updateData.phone,
+      address: updateData.address,
+    };
+
+    const user = await this.userModel.findByIdAndUpdate(id, updateObj, { new: true });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  async changePassword(id: string, currentPassword: string, newPassword: string): Promise<void> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isValid = await this.validatePassword(user, currentPassword);
+    if (!isValid) {
+      throw new ConflictException('Current password is incorrect');
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    await this.userModel.findByIdAndUpdate(id, { password: hashedPassword });
+  }
+
+  async updateLastLogin(id: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(id, { lastLogin: new Date() });
   }
 } 

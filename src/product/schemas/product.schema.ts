@@ -3,22 +3,31 @@ import { Document } from 'mongoose';
 
 export type ProductDocument = Product & Document;
 
+interface MediaAsset {
+    url: string;
+    public_id: string;
+}
+
+interface ProductVariant {
+    images: MediaAsset[];
+}
+
 @Schema({ timestamps: true })
 export class Product {
     @Prop({ required: true })
     title: string;
 
-    @Prop({ required: true })
-    description: string;
-
-    @Prop({ required: true, type: String })
-    category: string; // category name or id?
-
-    @Prop({ required: true })
-    mainImage: string; // cloudinary public url
-
     @Prop({ type: [String], default: [] })
-    variants: string[]; // array of cloudinary public urls
+    tags: string[];
+
+    @Prop({ required: true })
+    category: string;
+
+    @Prop({ type: Object, required: true })
+    images: {
+        main: MediaAsset;
+        variants: ProductVariant[];
+    };
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

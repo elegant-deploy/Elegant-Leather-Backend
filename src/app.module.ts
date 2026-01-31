@@ -9,10 +9,6 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './product/products.module';
 import { LeathersModule } from './leathers/leathers.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { DepartmentsModule } from './departments/departments.module';
-import { OrdersModule } from './orders/orders.module';
-import { StockModule } from './stock/stock.module';
-import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { databaseConfig } from './config/database.config';
 import * as mongoose from 'mongoose';
 
@@ -34,10 +30,6 @@ mongoose.connection.on('error', (err) => {
     ProductsModule,
     LeathersModule,
     CloudinaryModule,
-    DepartmentsModule,
-    OrdersModule,
-    StockModule,
-    AuditLogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
