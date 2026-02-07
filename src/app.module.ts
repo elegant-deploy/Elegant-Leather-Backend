@@ -9,6 +9,8 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './product/products.module';
 import { LeathersModule } from './leathers/leathers.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { MediaModule } from './media/media.module';
+import { ContactUsModule } from './contact-us/contact-us.module';
 import { databaseConfig } from './config/database.config';
 import * as mongoose from 'mongoose';
 
@@ -30,6 +32,8 @@ mongoose.connection.on('error', (err) => {
     ProductsModule,
     LeathersModule,
     CloudinaryModule,
+    MediaModule,
+    ContactUsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

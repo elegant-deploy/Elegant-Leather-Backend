@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsArray, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateProductDto {
     @IsString()
@@ -9,6 +9,14 @@ export class CreateProductDto {
     @IsString({ each: true })
     @IsOptional()
     tags?: string[];
+
+    @IsNumber()
+    @IsOptional()
+    ratings?: number;
+
+    @IsNumber()
+    @IsOptional()
+    reviewCount?: number;
 
     @IsString()
     @IsNotEmpty()

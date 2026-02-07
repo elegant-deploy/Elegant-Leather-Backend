@@ -39,7 +39,11 @@ export class CloudinaryService {
     async uploadVideo(file: Express.Multer.File): Promise<UploadedAsset> {
         return new Promise((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
-                { folder: 'elegant-leather', resource_type: 'video' },
+                {
+                    folder: 'elegant-leather',
+                    resource_type: 'video',
+                    max_file_size: 100000000, // 100MB limit
+                },
                 (error, result) => {
                     if (error) return reject(error);
                     if (!result) return reject(new Error('Upload failed'));

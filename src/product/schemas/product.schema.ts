@@ -20,6 +20,12 @@ export class Product {
     @Prop({ type: [String], default: [] })
     tags: string[];
 
+    @Prop({ default: 0 })
+    ratings: number;
+
+    @Prop({ default: 0 })
+    reviewCount: number;
+
     @Prop({ required: true })
     category: string;
 

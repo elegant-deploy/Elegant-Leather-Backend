@@ -21,7 +21,6 @@ import { SuperAdminGuard } from '../auth/guards/super-admin.guard';
 import { CreateProductDto } from './dto/create-product.dto';
 
 @Controller('products')
-@UseGuards(JwtAuthGuard, SuperAdminGuard)
 export class ProductsController {
     constructor(
         private readonly productsService: ProductsService,
@@ -38,7 +37,10 @@ export class ProductsController {
     }
 
     @Post()
-    @UseInterceptors(AnyFilesInterceptor())
+    @UseGuards(JwtAuthGuard, SuperAdminGuard)
+    @UseInterceptors(AnyFilesInterceptor({
+      limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
+    }))
     async create(
         @Request() req,
         @Body() createProductDto: CreateProductDto,
@@ -115,6 +117,7 @@ export class ProductsController {
        READ APIs
     ========================== */
     @Get()
+    @UseGuards()
     async findAll() {
         const [products, count] = await Promise.all([
             this.productsService.findAll(),
@@ -124,11 +127,13 @@ export class ProductsController {
     }
 
     @Get('category/:category')
+    @UseGuards()
     findByCategory(@Param('category') category: string) {
         return this.productsService.findByCategory(category);
     }
 
     @Get(':id')
+    @UseGuards()
     findOne(@Param('id') id: string) {
         return this.productsService.findOne(id);
     }
@@ -137,7 +142,10 @@ export class ProductsController {
        UPDATE
     ========================== */
     @Patch(':id')
-    @UseInterceptors(AnyFilesInterceptor())
+    @UseGuards(JwtAuthGuard, SuperAdminGuard)
+    @UseInterceptors(AnyFilesInterceptor({
+      limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
+    }))
     async update(
         @Param('id') id: string,
         @Body()
@@ -241,6 +249,7 @@ export class ProductsController {
        DELETE
     ========================== */
     @Delete(':id')
+    @UseGuards(JwtAuthGuard, SuperAdminGuard)
     async remove(@Param('id') id: string) {
         const product = await this.productsService.findOne(id);
         if (!product) {

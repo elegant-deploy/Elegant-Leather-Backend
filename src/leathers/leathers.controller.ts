@@ -21,7 +21,6 @@ import { SuperAdminGuard } from '../auth/guards/super-admin.guard';
 import { CreateLeatherDto } from './dto/create-leather.dto';
 
 @Controller('leathers')
-@UseGuards(JwtAuthGuard, SuperAdminGuard)
 export class LeathersController {
   constructor(
     private readonly leathersService: LeathersService,
@@ -38,7 +37,10 @@ export class LeathersController {
   }
 
   @Post()
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @UseInterceptors(AnyFilesInterceptor({
+    limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
+  }))
   async create(
     @Request() req,
     @Body() createLeatherDto: CreateLeatherDto,
@@ -171,11 +173,13 @@ export class LeathersController {
   }
 
   @Get('category/:category')
+  @UseGuards()
   findByCategory(@Param('category') category: string) {
     return this.leathersService.findByCategory(category);
   }
 
   @Get(':id')
+  @UseGuards()
   findOne(@Param('id') id: string) {
     return this.leathersService.findOne(id);
   }
@@ -184,7 +188,10 @@ export class LeathersController {
      UPDATE
   ========================== */
   @Patch(':id')
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @UseInterceptors(AnyFilesInterceptor({
+    limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
+  }))
   async update(
     @Param('id') id: string,
     @Body()
@@ -346,6 +353,7 @@ export class LeathersController {
      DELETE
   ========================== */
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
   async remove(@Param('id') id: string) {
     const leather = await this.leathersService.findOne(id);
     if (!leather) {

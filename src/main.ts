@@ -20,6 +20,9 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // Set global prefix for all routes
+  app.setGlobalPrefix('api');
+
   // Enable Socket.IO adapter
   app.useWebSocketAdapter(new IoAdapter(app));
 

@@ -26,6 +26,15 @@ export class Leather {
     @Prop()
     description: string;
 
+    @Prop()
+    inStock: number;
+
+    @Prop({ default: 0 })
+    ratings: number;
+
+    @Prop({ default: 0 })
+    reviewCount: number;
+
     @Prop({ required: true })
     category: string;
 
