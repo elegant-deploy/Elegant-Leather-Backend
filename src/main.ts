@@ -21,7 +21,7 @@ async function bootstrap() {
   });
 
   // Set global prefix for all routes
-  // app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api');
 
   // Enable Socket.IO adapter
   app.useWebSocketAdapter(new IoAdapter(app));
