@@ -7,40 +7,47 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 // Load environment variables
 dotenv.config();
 
-async function bootstrap() {
+let serverInstance: any = null;
+
+async function createServer() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn'], // Hide log level messages, only show errors and warnings
-  });
-  // app.useGlobalPipes(new ValidationPipe()); // Removed global validation to avoid issues with GET requests
-
-  // Enable CORS for all origins
-  app.enableCors({
-    origin: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
+    logger: ['error', 'warn'],
   });
 
-  // Set global prefix for all routes
-  app.setGlobalPrefix('api');
-
-  // Enable Socket.IO adapter
+  // app.useGlobalPipes(new ValidationPipe());
+  app.enableCors({ origin: true, methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', credentials: true });
+  // do not set a global prefix for serverless
   app.useWebSocketAdapter(new IoAdapter(app));
 
-  return app.getHttpAdapter().getInstance();
+  await app.init();
+  const expressApp = app.getHttpAdapter().getInstance();
+  return expressApp;
 }
 
-// Initialize the app
-(async () => {
-  const app = await bootstrap();
-  if (process.env.VERCEL) {
-    module.exports = app;
-  } else {
+// Vercel expects the module to export a handler function. Export an async function that
+// initializes the Nest app once (cold start) and reuses the Express instance.
+module.exports = async function vercelHandler(req: any, res: any) {
+  try {
+    if (!serverInstance) {
+      serverInstance = await createServer();
+    }
+    return serverInstance(req, res);
+  } catch (err) {
+    console.error('Serverless handler error:', err);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
+};
+
+// Local dev: when not running on Vercel, start a normal listener
+if (!process.env.VERCEL) {
+  (async () => {
+    const expressApp = await createServer();
     const port = process.env.PORT ?? 4000;
-    app.listen(port, '0.0.0.0', () => {
+    expressApp.listen(port, '0.0.0.0', () => {
       console.log(`🚀 Application is running on: http://localhost:${port}`);
       console.log(`🚀 Application is accessible at: http://0.0.0.0:${port}`);
       console.log(`🔌 Socket.IO server is ready`);
     });
-  }
-})();
-
+  })();
+}
