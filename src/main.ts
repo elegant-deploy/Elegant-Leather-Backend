@@ -16,7 +16,7 @@ async function createServer() {
 
   // app.useGlobalPipes(new ValidationPipe());
   app.enableCors({ origin: true, methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', credentials: true });
-  // do not set a global prefix for serverless
+  app.setGlobalPrefix('api');
   app.useWebSocketAdapter(new IoAdapter(app));
 
   await app.init();
