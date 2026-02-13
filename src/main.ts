@@ -7,42 +7,47 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 // Load environment variables
 dotenv.config();
 
-async function bootstrap() {
+let serverInstance: any = null;
+
+async function createServer() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn'], // Hide log level messages, only show errors and warnings
-  });
-  // app.useGlobalPipes(new ValidationPipe()); // Removed global validation to avoid issues with GET requests
-
-  // Enable CORS for all origins
-  app.enableCors({
-    origin: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
+    logger: ['error', 'warn'],
   });
 
-  // Set global prefix for all routes
+  // app.useGlobalPipes(new ValidationPipe());
+  app.enableCors({ origin: true, methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', credentials: true });
   app.setGlobalPrefix('api');
-
-  // Enable Socket.IO adapter
   app.useWebSocketAdapter(new IoAdapter(app));
 
-  if (process.env.VERCEL) {
-    // For Vercel serverless, return the Express instance
-    return app.getHttpAdapter().getInstance();
-  } else {
-    const port = process.env.PORT ?? 4000;
-    await app.listen(port, '0.0.0.0');
+  await app.init();
+  const expressApp = app.getHttpAdapter().getInstance();
+  return expressApp;
+}
 
-    console.log(`🚀 Application is running on: http://localhost:${port}`);
-    console.log(`🚀 Application is accessible at: http://0.0.0.0:${port}`);
-    console.log(`🔌 Socket.IO server is ready`);
+// Vercel expects the module to export a handler function. Export an async function that
+// initializes the Nest app once (cold start) and reuses the Express instance.
+module.exports = async function vercelHandler(req: any, res: any) {
+  try {
+    if (!serverInstance) {
+      serverInstance = await createServer();
+    }
+    return serverInstance(req, res);
+  } catch (err) {
+    console.error('Serverless handler error:', err);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
   }
-}
+};
 
-// For serverless deployment
-if (process.env.VERCEL) {
-  module.exports = bootstrap();
-} else {
-  bootstrap();
+// Local dev: when not running on Vercel, start a normal listener
+if (!process.env.VERCEL) {
+  (async () => {
+    const expressApp = await createServer();
+    const port = process.env.PORT ?? 4000;
+    expressApp.listen(port, '0.0.0.0', () => {
+      console.log(`🚀 Application is running on: http://localhost:${port}`);
+      console.log(`🚀 Application is accessible at: http://0.0.0.0:${port}`);
+      console.log(`🔌 Socket.IO server is ready`);
+    });
+  })();
 }
-
