@@ -11,6 +11,7 @@ import { LeathersModule } from './leathers/leathers.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MediaModule } from './media/media.module';
 import { ContactUsModule } from './contact-us/contact-us.module';
+import { TeamModule } from './team/team.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -25,6 +26,7 @@ import { databaseConfig } from './config/database.config';
     CloudinaryModule,
     MediaModule,
     ContactUsModule,
+    TeamModule,
   ],
   controllers: [AppController],
   providers: [AppService],
